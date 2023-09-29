@@ -10,7 +10,6 @@
                     </template>
                 </van-tabbar-item>
             </template>
-        
         </van-tabbar>
 
         <!-- <template v-for="(item,index) in tabbarData">
