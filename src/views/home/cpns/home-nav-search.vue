@@ -15,7 +15,7 @@
                 <div class="start">
                     <div class="date">
                         <span class="tip">入住</span>
-                        <span class="time">{{ startDate }}</span>
+                        <span class="time">{{ startDateStr }}</span>
                     </div>
                     
                     <div class="stay" @click="selectCalendar">住{{stayTime}}晚</div>
@@ -24,18 +24,18 @@
                 <div class="end">
                     <div class="date">
                         <span class="tip">离店</span>
-                        <span class="time">{{ endDate }}</span>
+                        <span class="time">{{ endDateStr }}</span>
                     </div>
                 </div>
         </div>
 
         <van-calendar v-model:show="showDate" type="range" @confirm="onConfirm"  color="#ff9854" />
-
+        <!-- 价格/人数选择 -->
         <div class="section price-counter bottom-gray-line">
             <div class="start">价格不限</div>
             <div class="end">人数不限</div>
         </div>
-            <!-- 关键字 -->
+        <!-- 关键字 -->
         <div class="section keyword bottom-gray-line">关键字/位置/民宿名</div>
 
          <!-- 热门建议 -->
@@ -49,6 +49,18 @@
                 </div>
             </template>
         </div>
+
+        <!-- 开始搜索框 -->
+        <div class="section">
+            <div class="btn" @click="searchClick">
+                <span class="text">
+                    开始搜索
+                </span>
+        </div>
+        </div>
+
+        <!-- categories -->
+        
     </div>
 </template>
 
@@ -57,7 +69,10 @@ import { ref,computed,toRef } from "vue";
 import { useRouter } from "vue-router";
 import  useCityStore  from '@/stores/modules/city.js'
 import useHomeStore from "@/stores/modules/home.js"
+import useMainStore from "@/stores/modules/main";
 import { storeToRefs } from 'pinia';
+
+
 
 import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
 
@@ -93,10 +108,11 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
     }
 
     //日期范围处理
-    const newDate = new Date()
-    const startDate = ref(formatMonthDay(newDate))
-    const nextDate = new Date().setDate(newDate.getDate()+1)
-    const endDate = ref(formatMonthDay(nextDate))
+    const mainStore = useMainStore()
+    const {startDate,endDate}  =storeToRefs(mainStore)
+    //转化为字符串的处理函数
+    const startDateStr = computed(()=>formatMonthDay(startDate.value))
+    const endDateStr = computed(()=>formatMonthDay(endDate.value))
 
     //点击弹出日历
     const selectCalendar = ()=>{
@@ -108,17 +124,18 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
     const showDate = ref(false)
 
     //日历选择时间
-    const stayTime = ref(selectDiffTime(newDate,nextDate))
+    const stayTime = ref(selectDiffTime(startDate.value,endDate.value))
     // const stayTime = computed(()=>{
     //     return selectDiffTime(newDate,nextDate)
     // })
 
+    //确定选择时间差
     const onConfirm = (value)=>{
         const selectStartDate = value[0]
         const selectEndDate = value[1]
 
-        startDate.value =  formatMonthDay(selectStartDate)
-        endDate.value =  formatMonthDay(selectEndDate)
+        mainStore.startDate =  selectStartDate
+        mainStore.endDate =  selectEndDate
 
         //获取住宿时间差
         stayTime.value = selectDiffTime(selectStartDate,selectEndDate)
@@ -127,7 +144,17 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
         showDate.value = false
     }
 
-    
+    //搜索按钮
+    const searchClick = ()=>{
+        router.push({
+            path:"/search",
+            query:{
+                startDate:startDate.value,
+                endDate:endDate.value,
+                currentCity:currentCity.cityName
+            }
+        })
+    }
 
 </script>
 
@@ -166,6 +193,7 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
             display: flex;
             flex-wrap: wrap;
             //
+            height: 44px;
             align-items: center;
             color: #999;
             .start {
@@ -211,6 +239,7 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
 
 .hot-suggests {
   margin: 10px 0;
+  height: auto;
 
   .item {
     padding: 4px 8px;
@@ -220,5 +249,21 @@ import { formatMonthDay,selectDiffTime } from '@/utils/format_day'
     line-height: 1;
   }
 }
-            
+
+.btn {
+    
+    // margin: 0 auto;
+    height: 44px;
+    width: 100%;
+    text-align: center;
+    line-height: 44px;
+    border-radius: 28px;
+    background-image: var(--theme-linear-gradient);
+    .text {
+        // text-align: center;
+        font-size: 20px;
+        color:white;
+        // font-weight: 600;
+    }
+}
 </style>

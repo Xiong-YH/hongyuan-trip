@@ -25,22 +25,37 @@
 <script setup>
     import tabbarData from '@/assets/data/tab-bar.js'
     import {getAssetURL} from '@/utils/load_assets.js'
-    import {ref} from 'vue'
-    import {useRouter} from 'vue-router'
+    import {ref ,watch} from 'vue'
+    import {useRouter,useRoute} from 'vue-router'
 
-    const active = ref(0)
+
+    //通过监听路由改变得到索引
     const currenIndex = ref(0)
+    const route = useRoute()
     const router = useRouter()
-    const itemClick = (index,item)=>{
+
+    watch(route,(newValue)=>{
+        const index = tabbarData.findIndex(item=>
+            item.path === newValue.path)
+        console.log(index);
+        if(index == -1) return
         currenIndex.value = index
-        router.push(item.path)
-    }
+    })
+
+
+    // const itemClick = (index,item)=>{
+    //     currenIndex.value = index
+    //     router.push(item.path)
+    // }
+
+
 </script>
 
 <style lang="less" scoped>
 .tab-bar {
-    img {
-        height: 26px;
-    }
+    
+   .img {
+    width: 26px;
+   }
 }
 </style>
