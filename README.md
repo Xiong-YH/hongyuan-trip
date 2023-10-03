@@ -27,3 +27,6 @@ npm run dev
 ```sh
 npm run build
 ```
+
+
+## Vue3.2 + Pinia
