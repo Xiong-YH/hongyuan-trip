@@ -1,6 +1,9 @@
 import axios from "axios";
 
 import {BASE_URL,TIMEOUT} from './config.js'
+import useMainStore from "@/stores/modules/main.js";
+
+const mainStore = useMainStore()
 
 
 class MyRequest {
@@ -8,6 +11,23 @@ class MyRequest {
         this.instance = axios.create({
             baseURL,
             timeout
+        })
+
+        //在实例上添加响应拦截器
+        this.instance.interceptors.request.use((config)=>{
+            mainStore.isLoading = true
+            return config
+        },(err)=>{
+            return err
+        })
+        
+        //在实例上添加响应拦截器
+        this.instance.interceptors.response.use((res)=>{
+            mainStore.isLoading = false
+            return res
+        },(err)=>{
+            mainStore.isLoading = false
+            return err
         })
     }
 

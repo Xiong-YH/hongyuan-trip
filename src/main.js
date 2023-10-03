@@ -6,7 +6,7 @@ import App from './App.vue'
 
 import router from './router'
 import pinia from './stores'
-
+import "default-passive-events";	
 
 const app = createApp(App)
 

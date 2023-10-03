@@ -8,6 +8,7 @@
         <div class="search-bar" v-if="isShowSearchBar">
             <search-bar/>
         </div>
+        
     </div>
 </template>
 
@@ -20,6 +21,7 @@ import homeCategoriea from './cpns/home-categoriea.vue'
 import homeContent from './cpns/home-content.vue'
 import searchBar from '@/components/search-bar/index.vue'
 import uesScroll from '@/hooks/useScroll'
+
 
 const homeStore = useHomeStore()
 
@@ -42,6 +44,9 @@ const isShowSearchBar = computed(()=>{
     return scrollTop.value > 360
 })
 </script>
+
+
+
 
 <style lang="less" scoped>
 .home {
