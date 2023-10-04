@@ -29,4 +29,6 @@ npm run build
 ```
 
 
-## Vue3.2 + Pinia
+## Vue3.2 + Pinia + vite
+
+

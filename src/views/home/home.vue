@@ -1,5 +1,5 @@
 <template>
-    <div class="home">
+    <div class="home" ref="homeRef">
         <home-nav-bar></home-nav-bar>
         <img src="@/assets/img/home/banner.webp" alt="">
         <home-nav-search></home-nav-search>
@@ -12,8 +12,12 @@
     </div>
 </template>
 
+<script>
+  export default { name: "home" }
+</script>
+
 <script setup>
-import { watch,computed } from 'vue'
+import { watch,computed,ref,onActivated } from 'vue'
 import useHomeStore from '@/stores/modules/home';
 import homeNavBar from './cpns/home_nav_bar.vue'
 import homeNavSearch from './cpns/home-nav-search.vue'
@@ -23,9 +27,12 @@ import searchBar from '@/components/search-bar/index.vue'
 import uesScroll from '@/hooks/useScroll'
 
 
+
 const homeStore = useHomeStore()
 
-const {isReachBtn,scrollListHandle,scrollTop} = uesScroll()
+//需要将高度确定，然后使用监听
+const homeRef = ref()
+const {isReachBtn,scrollTop} = uesScroll(homeRef)
 
 //监视屏幕滑动
 watch(isReachBtn , (newValue)=>{
@@ -43,6 +50,16 @@ watch(isReachBtn , (newValue)=>{
 const isShowSearchBar = computed(()=>{
     return scrollTop.value > 360
 })
+
+
+
+// 跳转回home时, 保留原来的位置
+onActivated(() => {
+  homeRef.value?.scrollTo({
+    top: scrollTop.value
+  })
+})
+
 </script>
 
 
@@ -50,6 +67,10 @@ const isShowSearchBar = computed(()=>{
 
 <style lang="less" scoped>
 .home {
+    height: 100vh;
+    //
+    overflow-y: auto;
+    box-sizing: border-box;
     padding-bottom: 60px;
     img {
         width: 100%;
